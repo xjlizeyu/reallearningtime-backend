@@ -4,39 +4,37 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name = "USER")
+@Table(name = "USER")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
     @Id
-    @Column(name = "user_id")
+    @Column(name = "USER_ID")
     private int userId;
 
-    @Column(name = "user_name")
+    @Column(name = "USER_NAME")
     private String userName;
 
-    @Column(name = "create_date")
+    @Column(name = "CREATE_DATE")
     private Date createDate;
 
-    @Column(name = "icon_url")
+    @Column(name = "ICON_URL")
     private String iconUrl;
 
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
 
-    @Column(name = "plan_deadline")
+    @Column(name = "PLAN_DEADLINE")
     private String planDeadline;
 
-    @Column(name = "plan_amount")
+    @Column(name = "PLAN_AMOUNT")
     private int planAmount;
 
-    @Column(name = "total_duration")
+    @Column(name = "TOTAL_DURATION")
     private int totalDuration;
 }

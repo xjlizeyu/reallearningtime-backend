@@ -20,5 +20,7 @@ public class DaoTest {
     public void test(){
         List<User> userList = userDao.findAll();
         System.out.println(userList);
+
+        System.out.println(userDao.findByUserName("test"));
     }
 }

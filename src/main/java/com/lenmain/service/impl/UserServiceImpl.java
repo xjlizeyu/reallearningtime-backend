@@ -16,23 +16,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Message SignIn(User newUser) {
-        return null;
+        userDao.save(newUser);
+        return new Message(true, "");
     }
 
     @Override
+    //检查是否有相同用户名，true为找到
     public boolean nameDuplicateCheck(String name) {
         Optional<User> optionalUser = Optional.ofNullable(userDao.findByUserName(name));
-        return !optionalUser.isPresent();
+        return optionalUser.isPresent();
 
     }
 
     @Override
     public Message validateLogIn(User guest) {
-        if(!nameDuplicateCheck(guest.getUserName())){
-            return new Message(false,"用户名不存在，请登录");
+        if (!nameDuplicateCheck(guest.getUserName())) {
+            return new Message(false, "用户名不存在，请登录");
         }
         String a = guest.getPassword();
         Optional<User> optionalUser = Optional.ofNullable(userDao.findByUserNameAndPassword(guest.getUserName(), guest.getPassword()));
         return optionalUser.isPresent() ? new Message(true, "") : new Message(false, "密码错误");
+    }
+
+    @Override
+    public User getUserByUserName(String userName) {
+        return userDao.findByUserName(userName);
     }
 }

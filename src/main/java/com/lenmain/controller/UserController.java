@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 
 @RestController
 @RequestMapping("/user")
@@ -15,17 +17,21 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signin")
-    public Message userSignIn(User newUser){
+    public Message userSignIn(User newUser) {
         userService.SignIn(newUser);
-        return new Message(true,"");
+        return new Message(true, "");
     }
+
     @PostMapping("/login")
     @ResponseBody
-    public Message userLogIn(String userName,String password){
+    public Message userLogIn(String userName, String password, HttpServletRequest request) {
         User user = new User();
         user.setPassword(password);
         user.setUserName(userName);
-        return userService.validateLogIn(user);
+        Message m = userService.validateLogIn(user);
+        if (!m.isSuccess()) return m;
+        request.getSession().setAttribute("user", userService.getUserByUserName(userName));
+        return m;
     }
 
     @PostMapping("/check")

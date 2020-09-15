@@ -9,4 +9,6 @@ public interface UserService {
     public boolean nameDuplicateCheck(String name);
 
     public Message validateLogIn(User guest);
+
+    public User getUserByUserName(String userName);
 }

@@ -11,4 +11,5 @@ public interface UserService {
     public Message validateLogIn(User guest);
 
     public User getUserByUserName(String userName);
+
 }

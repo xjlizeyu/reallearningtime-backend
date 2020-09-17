@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class ScheduledTask {
     private int currDuration;
-
     private boolean isTiming;
 
     public ScheduledTask() {
@@ -22,7 +21,9 @@ public class ScheduledTask {
     public void schedule() {
         if (isTiming) {
             currDuration++;
-            System.out.println(currDuration);
+            //System.out.println(currDuration);
         }
     }
+
+
 }

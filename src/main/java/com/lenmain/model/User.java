@@ -30,7 +30,7 @@ public class User {
     private String password;
 
     @Column(name = "PLAN_DEADLINE")
-    private String planDeadline;
+    private Date planDeadline;
 
     @Column(name = "PLAN_AMOUNT")
     private int planAmount;

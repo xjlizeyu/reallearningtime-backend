@@ -52,4 +52,9 @@ public class UserController {
     public boolean userNameCheck(String userName) {
         return userService.nameDuplicateCheck(userName);
     }
+
+    @PostMapping("/updateuserinfo")
+    public Message userInfoUpdate(int userId, String userName, String password) {
+        return userService.userInfoUpdate(userId, userName, password);
+    }
 }

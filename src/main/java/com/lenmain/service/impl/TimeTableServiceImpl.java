@@ -14,14 +14,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.Optional;
 
 @Service("TimeTableService")
 public class TimeTableServiceImpl implements TimeTableService {
-    @Resource
-    UserDao userDao;
     @Resource
     ScheduledTask scheduledTask;
     @Resource
@@ -37,9 +34,9 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     //TODO：找到某个用户的最新记录，将其未登陆日期的学习时间置为0
     public void fillLostData(int userId) {
-        Optional<Record> re = Optional.ofNullable(timeTableDao.findFirstByOrderByUserId(userId));
+        Optional<Record> re = Optional.ofNullable(timeTableDao.findFirstByUserId(userId));
         //判断是否之前没有记录
-        if (!re.isPresent()) {
+        if (re.isEmpty()) {
             Record record = new Record(0, new Date(), 0, userId);
             timeTableDao.save(record);
             return;
@@ -48,13 +45,12 @@ public class TimeTableServiceImpl implements TimeTableService {
 
         Date d = re.get().getDate();
         Date curr = new Date();
-        Long oneDay = 24 * 60 * 60 * 1000L;
+        long oneDay = 24 * 60 * 60 * 1000L;
         while (d.after(curr)) {
             Record record = new Record(0, d, 0, userId);
             timeTableDao.save(record);
             d = new Date(d.getTime() + oneDay);
         }
-        return;
     }
 
     @Override
@@ -72,7 +68,7 @@ public class TimeTableServiceImpl implements TimeTableService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Optional<User> optionalUser = Optional.ofNullable((User) request.getSession().getAttribute("user"));
         if (optionalUser.isPresent()) {
-            Record record = timeTableDao.findFirstByOrderByUserId(optionalUser.get().getUserId());
+            Record record = timeTableDao.findFirstByUserId(optionalUser.get().getUserId());
             record.setDuration(record.getDuration() + scheduledTask.getCurrDuration());
             scheduledTask.setCurrDuration(0);
         }

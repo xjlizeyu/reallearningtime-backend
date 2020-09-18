@@ -22,5 +22,8 @@ public class DaoTest {
         System.out.println(userList);
 
         System.out.println(userDao.findByUserName("test"));
+        User user = userDao.findByUserName("test");
+        user.setPassword("ppp");
+        userDao.saveAndFlush(user);
     }
 }

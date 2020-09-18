@@ -1,12 +1,13 @@
 package com.lenmain.dao;
 
 import com.lenmain.model.Record;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TimeTableDao {
+public interface TimeTableDao extends JpaRepository<Record, Integer> {
     //由于当天计时时，每次查询只需要当天记录即可，因此取最新记录
-    public Record findFirstByOrderByUserId(int userId);
+    Record findFirstByUserId(int userId);
 
-    public void save(Record record);
+    Record saveAndFlush(Record record);
 }

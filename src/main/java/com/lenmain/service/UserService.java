@@ -12,4 +12,7 @@ public interface UserService {
 
     public User getUserByUserName(String userName);
 
+    public Message userInfoUpdate(int userId, String userName, String password);
+
+    public User getUserByUserId(int userId);
 }

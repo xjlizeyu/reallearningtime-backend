@@ -37,4 +37,7 @@ public class User {
 
     @Column(name = "TOTAL_DURATION")
     private int totalDuration;
+
+    @Column(name = "IS_TIMING")
+    private boolean isTiming;
 }

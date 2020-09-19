@@ -14,7 +14,7 @@ public class ScheduledTask {
 
     public ScheduledTask() {
         this.currDuration = 0;
-        this.isTiming = true;
+        this.isTiming = false;
     }
 
     @Scheduled(cron = "* * * * * *")

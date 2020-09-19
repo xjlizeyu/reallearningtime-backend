@@ -1,7 +1,6 @@
 package com.lenmain.service.impl;
 
 import com.lenmain.dao.TimeTableDao;
-import com.lenmain.dao.UserDao;
 import com.lenmain.model.Message;
 import com.lenmain.model.Record;
 import com.lenmain.model.ScheduledTask;
@@ -27,7 +26,10 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     //TODO:开始计时
     public Message startTiming(int userId) {
-
+        if (!scheduledTask.isTiming()) {
+            return new Message(false, "已经开始计时");
+        }
+        scheduledTask.setTiming(true);
         return new Message(true, "");
     }
 
@@ -56,9 +58,15 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     //TODO:停止计时
     public Message stopTiming(int userId) {
-        scheduledTask.getCurrDuration();
+        if (!scheduledTask.isTiming()) {
+            return new Message(false, "已经停止计时");
+        }
+        scheduledTask.setTiming(false);
+        int duration = scheduledTask.getCurrDuration();
         scheduledTask.setCurrDuration(0);
-
+        Record firstRecord = timeTableDao.findFirstByUserId(userId);
+        firstRecord.setDuration(firstRecord.getDuration() + duration);
+        timeTableDao.saveAndFlush(firstRecord);
         return new Message(true, "");
     }
 
@@ -67,7 +75,7 @@ public class TimeTableServiceImpl implements TimeTableService {
     public void update() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         Optional<User> optionalUser = Optional.ofNullable((User) request.getSession().getAttribute("user"));
-        if (optionalUser.isPresent()) {
+        if (optionalUser.isPresent() && scheduledTask.isTiming()) {
             Record record = timeTableDao.findFirstByUserId(optionalUser.get().getUserId());
             record.setDuration(record.getDuration() + scheduledTask.getCurrDuration());
             scheduledTask.setCurrDuration(0);

@@ -57,4 +57,10 @@ public class UserController {
     public Message userInfoUpdate(int userId, String userName, String password) {
         return userService.userInfoUpdate(userId, userName, password);
     }
+
+    @PostMapping("/updateicon")
+    //用户上传并更改头像，需要用到七牛云对象存储
+    public Message userUpdateIcon() {
+        return new Message(true, "");
+    }
 }

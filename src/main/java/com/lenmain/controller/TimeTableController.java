@@ -28,4 +28,11 @@ public class TimeTableController {
         if (optionalUser.isEmpty()) return new Message(false, "未登录");
         return timeTableService.stopTiming(optionalUser.get().getUserId());
     }
+
+    @PostMapping("gettime")
+    public int getTime(HttpServletRequest request) {
+        Optional<User> optionalUser = Optional.ofNullable((User) (request.getSession().getAttribute("user")));
+        if (optionalUser.isEmpty()) return 0;
+        return timeTableService.getTodayTime(optionalUser.get().getUserId());
+    }
 }

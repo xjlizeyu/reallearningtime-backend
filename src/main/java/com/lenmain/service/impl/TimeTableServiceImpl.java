@@ -23,8 +23,14 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Resource
     TimeTableDao timeTableDao;
 
+
     @Override
-    //TODO:开始计时
+    public int getTodayTime(int userId) {
+        return timeTableDao.findFirstByUserId(userId).getDuration();
+    }
+
+    @Override
+    //开始计时
     public Message startTiming(int userId) {
         if (!scheduledTask.isTiming()) {
             return new Message(false, "已经开始计时");
@@ -34,7 +40,7 @@ public class TimeTableServiceImpl implements TimeTableService {
     }
 
     @Override
-    //TODO：找到某个用户的最新记录，将其未登陆日期的学习时间置为0
+    //找到某个用户的最新记录，将其未登陆日期的学习时间置为0
     public void fillLostData(int userId) {
         Optional<Record> re = Optional.ofNullable(timeTableDao.findFirstByUserId(userId));
         //判断是否之前没有记录
@@ -56,7 +62,7 @@ public class TimeTableServiceImpl implements TimeTableService {
     }
 
     @Override
-    //TODO:停止计时
+    //停止计时
     public Message stopTiming(int userId) {
         if (!scheduledTask.isTiming()) {
             return new Message(false, "已经停止计时");
@@ -70,7 +76,7 @@ public class TimeTableServiceImpl implements TimeTableService {
         return new Message(true, "");
     }
 
-    //TODO:在一天过去后停止计时并更新今日时间
+    //在一天过去后停止计时并更新今日时间
     @Scheduled(cron = "0 0 0 * * *")
     public void update() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();

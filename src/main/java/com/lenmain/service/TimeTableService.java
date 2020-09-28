@@ -12,5 +12,7 @@ public interface TimeTableService {
 
     public Message stopTiming(int userId);
 
+    public int getTodayTime(int userId);
+
     public void update();
 }

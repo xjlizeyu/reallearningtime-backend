@@ -32,10 +32,11 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     //开始计时
     public Message startTiming(int userId) {
-        if (!scheduledTask.isTiming()) {
+        if (scheduledTask.isTiming()) {
             return new Message(false, "已经开始计时");
         }
         scheduledTask.setTiming(true);
+        scheduledTask.setStartTime(new Date());
         return new Message(true, "");
     }
 
@@ -54,11 +55,14 @@ public class TimeTableServiceImpl implements TimeTableService {
         Date d = re.get().getDate();
         Date curr = new Date();
         long oneDay = 24 * 60 * 60 * 1000L;
-        while (d.after(curr)) {
+        d = new Date(d.getTime() + oneDay);
+        //从上次登录到今日的数据库填充
+        while (!d.after(curr)) {
             Record record = new Record(0, d, 0, userId);
             timeTableDao.save(record);
             d = new Date(d.getTime() + oneDay);
         }
+        return;
     }
 
     @Override
@@ -68,8 +72,8 @@ public class TimeTableServiceImpl implements TimeTableService {
             return new Message(false, "已经停止计时");
         }
         scheduledTask.setTiming(false);
-        int duration = scheduledTask.getCurrDuration();
-        scheduledTask.setCurrDuration(0);
+        Date date = new Date();
+        int duration = (int) ((date.getTime() - scheduledTask.getStartTime().getTime()) / 1000);
         Record firstRecord = timeTableDao.findFirstByUserId(userId);
         firstRecord.setDuration(firstRecord.getDuration() + duration);
         timeTableDao.saveAndFlush(firstRecord);
@@ -79,12 +83,15 @@ public class TimeTableServiceImpl implements TimeTableService {
     //在一天过去后停止计时并更新今日时间
     @Scheduled(cron = "0 0 0 * * *")
     public void update() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        Optional<User> optionalUser = Optional.ofNullable((User) request.getSession().getAttribute("user"));
-        if (optionalUser.isPresent() && scheduledTask.isTiming()) {
-            Record record = timeTableDao.findFirstByUserId(optionalUser.get().getUserId());
-            record.setDuration(record.getDuration() + scheduledTask.getCurrDuration());
-            scheduledTask.setCurrDuration(0);
+        if (scheduledTask.isTiming()) {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            Optional<User> optionalUser = Optional.ofNullable((User) request.getSession().getAttribute("user"));
+            if (optionalUser.isPresent() && scheduledTask.isTiming()) {
+                Record record = timeTableDao.findFirstByUserId(optionalUser.get().getUserId());
+                Date date = new Date();
+                record.setDuration(record.getDuration() + (int) (date.getTime() - scheduledTask.getStartTime().getTime()) / 1000);
+                scheduledTask.setStartTime(new Date());
+            }
         }
     }
 }

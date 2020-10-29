@@ -6,24 +6,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 @Data
 public class ScheduledTask {
-    private int currDuration;
+    private Date startTime;
     private boolean isTiming;
 
     public ScheduledTask() {
-        this.currDuration = 0;
+        this.startTime = new Date();
         this.isTiming = false;
     }
-
-    @Scheduled(cron = "* * * * * *")
-    public void schedule() {
-        if (isTiming) {
-            currDuration++;
-            //System.out.println(currDuration);
-        }
-    }
-
 
 }

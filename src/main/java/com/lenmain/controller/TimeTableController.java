@@ -5,11 +5,13 @@ import com.lenmain.model.User;
 import com.lenmain.service.TimeTableService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+@RestController
 @RequestMapping("/timing")
 public class TimeTableController {
     @Resource
@@ -29,7 +31,7 @@ public class TimeTableController {
         return timeTableService.stopTiming(optionalUser.get().getUserId());
     }
 
-    @PostMapping("gettime")
+    @PostMapping("/gettime")
     public int getTime(HttpServletRequest request) {
         Optional<User> optionalUser = Optional.ofNullable((User) (request.getSession().getAttribute("user")));
         if (optionalUser.isEmpty()) return 0;

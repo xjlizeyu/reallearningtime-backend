@@ -5,11 +5,13 @@ import com.lenmain.model.User;
 import com.lenmain.service.PlanService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
+@RestController
 @RequestMapping("/plan")
 public class PlanController {
     @Resource

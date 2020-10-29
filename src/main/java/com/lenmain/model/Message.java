@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class Message {
     private boolean isSuccess;
 
+
     private String errorMessage;
 }

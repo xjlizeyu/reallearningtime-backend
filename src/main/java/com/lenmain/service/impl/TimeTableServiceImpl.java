@@ -26,7 +26,7 @@ public class TimeTableServiceImpl implements TimeTableService {
 
     @Override
     public int getTodayTime(int userId) {
-        return timeTableDao.findFirstByUserId(userId).getDuration();
+        return timeTableDao.findFirstByUserIdOrderByRecordIdDesc(userId).getDuration();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     //找到某个用户的最新记录，将其未登陆日期的学习时间置为0
     public void fillLostData(int userId) {
-        Optional<Record> re = Optional.ofNullable(timeTableDao.findFirstByUserId(userId));
+        Optional<Record> re = Optional.ofNullable(timeTableDao.findFirstByUserIdOrderByRecordIdDesc(userId));
         //判断是否之前没有记录
         if (re.isEmpty()) {
             Record record = new Record(0, new Date(), 0, userId);
@@ -57,9 +57,9 @@ public class TimeTableServiceImpl implements TimeTableService {
         long oneDay = 24 * 60 * 60 * 1000L;
         d = new Date(d.getTime() + oneDay);
         //从上次登录到今日的数据库填充
+        //在hibernate中使用save保存时会将对象保存在缓存中，如果连续存储同一对象需要使用注解声明主键自增
         while (!d.after(curr)) {
-            Record record = new Record(0, d, 0, userId);
-            timeTableDao.save(record);
+            timeTableDao.save(new Record(0, d, 0, userId));
             d = new Date(d.getTime() + oneDay);
         }
         return;
@@ -74,7 +74,7 @@ public class TimeTableServiceImpl implements TimeTableService {
         scheduledTask.setTiming(false);
         Date date = new Date();
         int duration = (int) ((date.getTime() - scheduledTask.getStartTime().getTime()) / 1000);
-        Record firstRecord = timeTableDao.findFirstByUserId(userId);
+        Record firstRecord = timeTableDao.findFirstByUserIdOrderByRecordIdDesc(userId);
         firstRecord.setDuration(firstRecord.getDuration() + duration);
         timeTableDao.saveAndFlush(firstRecord);
         return new Message(true, "");
@@ -87,7 +87,7 @@ public class TimeTableServiceImpl implements TimeTableService {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             Optional<User> optionalUser = Optional.ofNullable((User) request.getSession().getAttribute("user"));
             if (optionalUser.isPresent() && scheduledTask.isTiming()) {
-                Record record = timeTableDao.findFirstByUserId(optionalUser.get().getUserId());
+                Record record = timeTableDao.findFirstByUserIdOrderByRecordIdDesc(optionalUser.get().getUserId());
                 Date date = new Date();
                 record.setDuration(record.getDuration() + (int) (date.getTime() - scheduledTask.getStartTime().getTime()) / 1000);
                 scheduledTask.setStartTime(new Date());

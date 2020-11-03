@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 
 
 @RestController
@@ -29,7 +30,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public Message userLogIn(String userName, String password, HttpServletRequest request) {
+    public Message userLogIn(String userName, String password, HttpServletRequest request) throws ParseException {
         User user = new User();
         user.setPassword(password);
         user.setUserName(userName);

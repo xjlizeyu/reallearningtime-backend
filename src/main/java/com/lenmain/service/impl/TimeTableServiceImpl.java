@@ -6,6 +6,10 @@ import com.lenmain.model.Record;
 import com.lenmain.model.ScheduledTask;
 import com.lenmain.model.User;
 import com.lenmain.service.TimeTableService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,7 +17,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service("TimeTableService")
@@ -40,9 +49,10 @@ public class TimeTableServiceImpl implements TimeTableService {
         return new Message(true, "");
     }
 
+
     @Override
     //找到某个用户的最新记录，将其未登陆日期的学习时间置为0
-    public void fillLostData(int userId) {
+    public void fillLostData(int userId) throws ParseException {
         Optional<Record> re = Optional.ofNullable(timeTableDao.findFirstByUserIdOrderByRecordIdDesc(userId));
         //判断是否之前没有记录
         if (re.isEmpty()) {
@@ -56,6 +66,8 @@ public class TimeTableServiceImpl implements TimeTableService {
         Date curr = new Date();
         long oneDay = 24 * 60 * 60 * 1000L;
         d = new Date(d.getTime() + oneDay);
+
+
         //从上次登录到今日的数据库填充
         //在hibernate中使用save保存时会将对象保存在缓存中，如果连续存储同一对象需要使用注解声明主键自增
         while (!d.after(curr)) {
@@ -94,4 +106,16 @@ public class TimeTableServiceImpl implements TimeTableService {
             }
         }
     }
+
+    @Override
+    //返回近一周的时间数据
+    public List<Record> fetchStatistic(int userId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "recordId");
+        Pageable request = PageRequest.of(0, 7, sort);
+        List<Record> list = timeTableDao.findByUserIdOrderByRecordIdDesc(request, userId);
+        //从数据库中取出顺序与需求不符
+        Collections.reverse(list);
+        return list;
+    }
+
 }

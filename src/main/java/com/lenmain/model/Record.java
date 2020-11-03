@@ -19,6 +19,7 @@ public class Record {
     private int recordId;
 
     @Column(name = "DATE")
+    @Temporal(TemporalType.DATE)
     private Date date;
 
     @Column(name = "DURATION")

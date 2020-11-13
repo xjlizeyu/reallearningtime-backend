@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/timing")
+//TODO:使用AOP验证用户是否登录，简化代码
 public class TimeTableController {
     @Resource
     TimeTableService timeTableService;
@@ -28,6 +29,10 @@ public class TimeTableController {
         return timeTableService.startTiming(optionalUser.get().getUserId());
     }
 
+    @PostMapping("timing")
+    public Message timing(HttpServletRequest request){
+        return new Message(true,"");
+    }
     @PostMapping("/stop")
     public Message stopTiming(HttpServletRequest request) {
         Optional<User> optionalUser = Optional.ofNullable((User) (request.getSession().getAttribute("user")));
